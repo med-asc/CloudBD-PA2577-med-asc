@@ -1,0 +1,69 @@
+# Number of Testservers
+$numTestServers = 2
+
+$script = <<-SCRIPT
+  echo ============= Installing puppet ====================
+  sudo apt-get update
+  wget https://apt.puppet.com/puppet7-release-focal.deb
+  dpkg -i puppet7-release-focal.deb
+  sudo apt-get update
+  sudo apt-get install -y puppet-agent
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "rshash/Ubuntu_20.04-M1-Mac"
+
+  # || Virtual machines
+  # Appserver
+  config.vm.define "appserver" do |appserver|
+    # Install puppet
+    appserver.vm.provision "shell", inline: $script
+
+    # Provisions for appserver
+    appserver.vm.provision "puppet" do |puppet|
+      puppet.manifests_path = "manifests"
+      puppet.manifest_file = "appserver.pp"
+    end
+  end
+
+  # DBServer
+  config.vm.define "dbserver" do |dbserver|
+    # Install puppet
+    dbserver.vm.provision "shell", inline: $script
+
+    # Provisions for dbserver
+    dbserver.vm.provision "puppet" do |puppet|
+      puppet.manifests_path = "manifests"
+      puppet.manifest_file = "dbserver.pp"
+    end
+  end
+
+  # WebServer
+  config.vm.define "web" do |web|
+    # Port forward
+    web.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+    # Install puppet
+    web.vm.provision "shell", inline: $script
+
+    # Provisions for web
+    web.vm.provision "puppet" do |puppet|
+      puppet.manifests_path = "manifests"
+      puppet.manifest_file = "web.pp"
+    end
+  end
+
+  # Number of testservers
+  (0..$numTestServers).each do |i|
+    config.vm.define "tst#{i}" do |tst|
+      # Install puppet
+      web.vm.provision "shell", inline: $script
+
+      # Provisions for web
+      web.vm.provision "puppet" do |puppet|
+        puppet.manifests_path = "manifests"
+        puppet.manifest_file = "web.pp"
+      end
+    end
+  end
+end
