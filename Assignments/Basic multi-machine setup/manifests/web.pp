@@ -8,12 +8,11 @@ Exec["apt-update"] -> Package <| |>
 
 # Install nginx
 package { 'nginx':
-    require => Exec['apt-update'],
-    ensure => 'installed',
+    ensure => 'installed'
 }
 
 # Run nginx
 service { 'nginx':
     ensure  => running,
-    require => Package['nginx'],
+    require => Package['nginx']
 }

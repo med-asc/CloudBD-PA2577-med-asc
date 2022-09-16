@@ -8,12 +8,11 @@ Exec["apt-update"] -> Package <| |>
 
 # Install mysql-server
 package { 'mysql-server':
-    require => Exec['apt-update'],
-    ensure => 'installed',
+    ensure => 'installed'
 }
 
 # Run mysql
 service { 'mysql':
     ensure  => running,
-    require => Package['mysql-server'],
+    require => Package['mysql-server']
 }
