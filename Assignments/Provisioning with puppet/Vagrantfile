@@ -1,0 +1,22 @@
+$script = <<-SCRIPT
+  echo ============= Installing puppet ====================
+  sudo apt-get update
+  wget https://apt.puppet.com/puppet7-release-focal.deb
+  dpkg -i puppet7-release-focal.deb
+  sudo apt-get update
+  sudo apt-get install -y puppet-agent
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "rshash/Ubuntu_20.04-M1-Mac"
+  # Install puppet
+  # Required to run apt-get update before installing puppet because of error.
+  # Don't know if its a VMware fusion Tech preview issue or box issue.
+  config.vm.provision "shell", inline: $script
+
+  # Load puppet manifest
+  config.vm.provision "puppet" do |puppet|
+    puppet.environment_path = "environments/"
+    puppet.environment = "test"
+  end
+end
