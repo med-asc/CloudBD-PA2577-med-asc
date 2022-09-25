@@ -1,0 +1,47 @@
+# Run:
+# vagrant up --provision-with store_ip
+# vagrant provision --provision-with update_hosts
+
+# Verify:
+# vagrant ssh vm1 -c "cat /etc/hosts"
+# vagrant ssh vm2 -c "cat /etc/hosts"
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "rshash/Ubuntu_20.04-M1-Mac"
+
+  # || Virtual machines
+  config.vm.define "vm1" do |vm1|
+    # Create file hosts.txt
+    # Add input to host file
+    vm1.vm.provision "store_ip", type: "shell", inline: <<-SHELL
+      echo "================================="
+      echo "Save IP to vagrant/hosts"
+      echo "================================="
+      # Append ip4 and ip6 to hosts file
+      ip4=$(ifconfig eth0 | grep inet | awk 'NR==1{ print $2 }')
+      ip6=$(ifconfig eth0 | grep inet | awk 'NR==2{ print $2 }')
+      echo "${ip4} ${ip6} VM1" > /vagrant/hosts.txt
+    SHELL
+  end
+
+  config.vm.define "vm2" do |vm2|
+    # Add input to host file
+    vm2.vm.provision "store_ip", type: "shell", inline: <<-SHELL
+      echo "================================="
+      echo "Save IP to vagrant/hosts"
+      echo "================================="
+      # Append ip4 and ip6 to hosts file
+      ip4=$(ifconfig eth0 | grep inet | awk 'NR==1{ print $2 }')
+      ip6=$(ifconfig eth0 | grep inet | awk 'NR==2{ print $2 }')
+      echo "${ip4} ${ip6} VM2" >> /vagrant/hosts.txt
+    SHELL
+  end
+
+  # Concat vagrant/hosts with VM /etc/hosts
+  config.vm.provision "update_hosts", type: "shell", inline: <<-SHELL
+    echo "================================="
+    echo "Concat hosts file"
+    echo "================================="
+    cat /vagrant/hosts.txt >> /etc/hosts
+  SHELL
+end
