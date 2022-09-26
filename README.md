@@ -4,8 +4,10 @@ Taking the course "Applied Cloud Computing and Big Data". This will be my reposi
 ## Setup
 Macbook M1 (ARM64)
 ## Apps used
-Instructions here: https://www.vagrantup.com/docs/providers/vmware/installation
+Instructions here: https://stackoverflow.com/questions/72112571/vagrant-vmware-utility-driver
+- Rosetta
+- Vagrant
 - VMware Fusion Tech Preview (for M1 Mac)
-- Vagrant VMware Utility
+- Vagrant VMware Utility 1.0.21
 - Vagrant VMware provider plugin
 - Puppet
