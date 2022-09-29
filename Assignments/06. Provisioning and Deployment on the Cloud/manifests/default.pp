@@ -33,10 +33,10 @@ class db {
   }
 }
 
-node 'appserver' {
+node /^(appserver)(.localdomain)?/ {
   class { 'app': }
 }
 
-node 'dbserver' {
+node /^(dbserver)(.localdomain)?/ {
   class { 'db': }
 }
