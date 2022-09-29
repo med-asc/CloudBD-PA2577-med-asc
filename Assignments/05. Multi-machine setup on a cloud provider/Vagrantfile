@@ -1,0 +1,30 @@
+# vagrant up --provider=vmware_desktop
+# vagrant up --provider=digital_ocean
+
+Vagrant.configure("2") do |config|
+  config.vm.define "appserver" do |appserver|
+    appserver.vm.hostname = 'appserver'
+    appserver.vm.box = "spox/ubuntu-arm"
+    appserver.vm.box_version = "1.0.0"
+  end
+
+  config.vm.define "dbserver" do |dbserver|
+    dbserver.vm.hostname = 'dbserver'
+    dbserver.vm.box = "spox/ubuntu-arm"
+    dbserver.vm.box_version = "1.0.0"
+  end
+
+  config.vm.provider :digital_ocean do |provider, override|
+    override.ssh.private_key_path = '~/.ssh/digitalOcean'
+    override.vm.box = 'digital_ocean'
+    override.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+  
+    provider.token = ENV['DIGITALOCEAN_TOKEN']
+    provider.image = 'ubuntu-18-04-x64'
+    provider.region = 'nyc1'
+    provider.size = 's-1vcpu-1gb'
+    provider.setup = false
+    # Remove SMB
+    override.vm.allowed_synced_folder_types = :rsync
+  end
+end
