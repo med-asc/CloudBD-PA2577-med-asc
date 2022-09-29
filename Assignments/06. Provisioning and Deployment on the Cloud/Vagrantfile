@@ -1,0 +1,35 @@
+# vagrant up --provider=vmware_desktop
+# vagrant up --provider=digital_ocean
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "rshash/Ubuntu_20.04-M1-Mac"
+
+  config.vm.define "appserver" do |appserver|
+    appserver.vm.hostname = 'appserver'
+  end
+
+  config.vm.define "dbserver" do |dbserver|
+    dbserver.vm.hostname = 'dbserver'
+  end
+
+  config.vm.provider :digital_ocean do |provider, override|
+    override.ssh.private_key_path = '~/.ssh/digitalOcean'
+    override.vm.box = 'digital_ocean'
+    override.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+  
+    provider.token = ENV['DIGITALOCEAN_TOKEN']
+    provider.image = 'ubuntu-18-04-x64'
+    provider.region = 'nyc1'
+    provider.size = 's-1vcpu-1gb'
+    provider.setup = false
+    # Remove SMB
+    override.vm.allowed_synced_folder_types = :rsync
+  end
+
+  config.vm.provider :vmware_desktop do |vmware|
+    vmware.gui = true
+  end
+
+  config.puppet_install.puppet_version = :latest 
+  config.vm.provision :puppet
+end
