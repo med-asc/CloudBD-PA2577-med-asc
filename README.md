@@ -1,4 +1,4 @@
-# CloudBD-PA2577-CristianMedina
+# CloudBD-PA2577-med-asc
 ## Description
 Taking the course "Applied Cloud Computing and Big Data". This will be my repository where i will upload all my assignments.
 ## Setup
